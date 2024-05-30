@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Create Cryptocurrency Converter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header></header>
+
+    <div class="container">
+
+        <div class="img-placed">
+            <img src="./image/btc.png" alt="">
+        </div>
+
+        <form action="">
+
+            <input type="text" name="amount" id="amount" placeholder="Enter Amount" required>
+
+            <label id="fromCurrencyName"></label>
+            <div id="select-field">
+
+                <select name="fromCurrency" id="fromCurrency" onchange="showFromCurrencyName()">
+                    <option value="USD" selected="">USD - US Dollar</option>
+                    <option value="EUR">EUR - Euro</option>
+                    <!-- Other currency options... -->
+                </select>
+    
+                
+                <select name="toCurrency" id="toCurrency" onchange="showCurrencyName()">
+                    <option value="BTC">Bitcoin (BTC)</option>
+                    <option value="ETH">Ethereum (ETH)</option>
+                    <!-- Other cryptocurrency options... -->
+                </select>
+
+            </div>
+
+            <br>
+
+            <button type="button" id="convert" class="primary-btn">
+                Convert
+            </button>
+
+        </form>
+
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function showCurrencyName() {
+            var selectCurrency = document.getElementById("toCurrency");
+            var currencyName = selectCurrency.options[selectCurrency.selectedIndex].text;
+            document.getElementById("currencyName").innerHTML = currencyName;
+        }
+    
+        function showFromCurrencyName() {
+            var selectFromCurrency = document.getElementById("fromCurrency");
+            var fromCurrencyName = selectFromCurrency.options[selectFromCurrency.selectedIndex].text;
+            document.getElementById("fromCurrencyName").innerHTML = fromCurrencyName;
+        }
+    
+        const amountInput = document.querySelector('#amount');
+        const fromCurrencySelect = document.querySelector('#fromCurrency');
+        const toCurrencySelect = document.querySelector('#toCurrency');
+        const convertButton = document.querySelector('#convert');
+        const resultParagraph = document.querySelector('#result');
+    
+        convertButton.addEventListener('click', () => {
+            const amount = amountInput.value;
+            const fromCurrency = fromCurrencySelect.value;
+            const toCurrency = toCurrencySelect.value;
+            const apiUrl = "https://app.exchanger101.com/api/v2/crypto-price";
+    
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("API Response:", data); // Log the entire response to the console
+    
+                    const targetCurrencyData = data[toCurrency];
+    
+                    if (targetCurrencyData && targetCurrencyData.hasOwnProperty('to_usdt')) {
+                        const rate = targetCurrencyData.to_usdt;
+                        const result = amount * rate;
+    
+                        resultParagraph.innerHTML = `${amount} ${fromCurrency} is equal to ${result.toFixed(8)} ${toCurrency}`;
+                    } else {
+                        resultParagraph.innerHTML = "Error: Unable to fetch exchange rate for the selected currency.";
+                    }
+                })
+                .catch(error => {
+                    resultParagraph.innerHTML = "Error: Unable to fetch exchange rate.";
+                    console.error(error);
+                });
+        });
+    </script>
+    
+    
+    
+</body>
+</html>
